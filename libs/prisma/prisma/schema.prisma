@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Campaign {
+  id        String          @id @default(cuid())
+  name      String
+  keyword   String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  status    CampaignStatus  @default(ACTIVE)
+  endType   CampaignEndType @default(NEVER)
+  endValue  Int?
+  providers Providers[]
+  Candidate Candidate[]
+}
+
+model Candidate {
+  id                String       @id @default(cuid())
+  name              String?      @default("Unspecified")
+  campaignId        String
+  age               Int?         @default(0)
+  workTime          WorkTime     @default(UNDEFINED)
+  workLocation      WorkLocation @default(UNDEFINED)
+  position          String?      @default("Unspecified")
+  salary            Int?         @default(0)
+  skills            String[]
+  location          String?
+  languages         String[]
+  yearsOfExperience Int?         @default(0)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  campaign          Campaign     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  education         Education[]
+  experience        Experience[]
+}
+
+model Education {
+  id           String    @id @default(cuid())
+  institution  String
+  fieldOfStudy String
+  level        String
+  duration     String
+  startDate    String
+  endDate      String
+  candidateId  String
+  Candidate    Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+}
+
+model Experience {
+  id          String    @id @default(cuid())
+  company     String
+  position    String
+  duration    String
+  startDate   String
+  endDate     String
+  description String
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+}
+
+enum CampaignStatus {
+  ACTIVE
+  PAUSED
+  DELETED
+  ENDED
+}
+
+enum CampaignEndType {
+  NEVER
+  DATE
+  COUNT
+}
+
+enum Providers {
+  WORKUA
+  ROBOTAUA
+  LINKEDIN
+}
+
+enum WorkTime {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  UNDEFINED
+}
+
+enum WorkLocation {
+  REMOTE
+  OFFICE
+  MIXED
+  UNDEFINED
+}
