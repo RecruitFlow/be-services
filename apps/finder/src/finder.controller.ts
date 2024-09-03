@@ -1,14 +1,13 @@
-import { Controller, Get, Inject } from '@nestjs/common';
-import { Transport, MicroserviceOptions } from '@nestjs/microservices';
+import { Controller, Get } from '@nestjs/common';
+import { Transport } from '@nestjs/microservices';
 import {
-  MessagePattern,
   Payload,
   EventPattern,
   Ctx,
-  RmqContext,
   KafkaContext,
 } from '@nestjs/microservices';
 import { FinderService } from './finder.service';
+import { CampaignCreatedEvent } from '@app/interfaces';
 import { Logger } from '@nestjs/common';
 
 const logger = new Logger('FinderService');
@@ -29,7 +28,7 @@ export class FinderController {
 
   @EventPattern('campaign_search', Transport.KAFKA)
   async job(
-    @Payload() data: number[],
+    @Payload() data: CampaignCreatedEvent,
     @Ctx() context: KafkaContext,
   ): Promise<boolean> {
     logger.log('Received Job!');

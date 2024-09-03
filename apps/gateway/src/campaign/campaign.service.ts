@@ -3,6 +3,7 @@ import { CreateCampaignInput } from './dto/create-campaign.input';
 import { UpdateCampaignInput } from './dto/update-campaign.input';
 import { ListCampaignInput } from './dto/list-campaign.input';
 import { PrismaService } from '@app/prisma';
+import { CampaignCreatedEvent } from '@app/interfaces';
 import { Controller, Get, Post, Inject, Body } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
@@ -21,7 +22,9 @@ export class CampaignService {
       data: createCampaignInput,
     });
 
-    this.messageBroker.emit('campaign_search', campaign).subscribe(logger.log);
+    this.messageBroker
+      .emit('campaign_search', campaign as CampaignCreatedEvent)
+      .subscribe(logger.log);
 
     return campaign;
   }

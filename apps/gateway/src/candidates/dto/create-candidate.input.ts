@@ -7,7 +7,7 @@ import {
   IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import type { WorkTime, WorkLocation } from '@app/prisma';
+import type { WorkTime, WorkLocation } from '@prisma/client';
 
 class EducationDTO {
   @IsString()

@@ -3,6 +3,7 @@ import { AnthropicParser } from './parser/anthropic.parser';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { Logger } from '@nestjs/common';
+import { CampaignCreatedEvent } from '@app/interfaces';
 import { Inject } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import puppeteer from 'puppeteer';
@@ -16,7 +17,7 @@ export class FinderConsumer extends WorkerHost {
     super();
   }
 
-  async process(job: Job<any, any, string>) {
+  async process(job: Job<CampaignCreatedEvent, any, string>) {
     try {
       await job.updateProgress(0);
 

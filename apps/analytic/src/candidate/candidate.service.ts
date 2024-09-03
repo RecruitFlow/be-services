@@ -1,9 +1,10 @@
+import * as moment from 'moment';
 import { Injectable } from '@nestjs/common';
-import { CreateCandidateInput } from './dto/create-candidate.input';
 import { UpdateCandidateInput } from './dto/update-candidate.input';
 import { Inject } from '@nestjs/common';
 import { ClickHouseClient } from '@depyronick/nestjs-clickhouse';
 import { GroupAnalyticInput } from './dto/group-analytic.input';
+import { CandidateCreatedEvent } from '@app/interfaces';
 
 interface CandidateTable {
   name: string;
@@ -24,10 +25,17 @@ export class CandidateService {
     private analyticsServer: ClickHouseClient,
   ) {}
 
-  async create(createCandidateInput: CreateCandidateInput) {
+  async create(createCandidateInput: CandidateCreatedEvent) {
     const response = await this.analyticsServer.insertPromise<CandidateTable>(
       'candidates',
-      [createCandidateInput],
+      [
+        {
+          ...createCandidateInput,
+          createdAt: moment(createCandidateInput.createdAt).format(
+            'YYYY-MM-DD HH:mm:ss',
+          ),
+        },
+      ],
     );
 
     return response;

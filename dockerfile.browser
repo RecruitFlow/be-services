@@ -1,0 +1,39 @@
+FROM --platform=linux/amd64 node:18.14.2 AS base
+
+ARG TARGET_SERVICE=gateway
+
+ENV TARGET_SERVICE=${TARGET_SERVICE}
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+
+RUN apt-get update \
+    && apt-get install -y wget gnupg \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g pnpm
+
+WORKDIR /usr/src/app
+
+# Copy package.json and pnpm-lock.yaml if you have it
+COPY package.json package.json
+
+# Install dependencies
+RUN pnpm install
+
+# Copy the rest of the application
+COPY . .
+
+# ===== Development Stage =====
+FROM base AS dev
+
+EXPOSE 3000 
+
+RUN npx prisma generate --schema=./libs/prisma/prisma/schema.prisma
+
+CMD ["sh", "-c", "npm run start $TARGET_SERVICE"]
+# ===== Development Stage =====
+# npx prisma migrate dev --schema=./libs/prisma/prisma/schema.prisma

@@ -5,6 +5,7 @@ import { Logger } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
 import { ClientKafka } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
+import { CandidateCreatedEvent } from '@app/interfaces';
 
 @Injectable()
 export class CandidatesService {
@@ -66,18 +67,7 @@ export class CandidatesService {
     await Promise.all(subWrites);
 
     this.analyticQueue
-      .emit('candidate_create', {
-        name: candidate.name,
-        age: candidate.age,
-        workTime: candidate.workTime,
-        workLocation: candidate.workLocation,
-        position: candidate.position,
-        salary: candidate.salary,
-        yearsOfExperience: candidate.yearsOfExperience,
-        campaignId: candidate.campaignId,
-        location: candidate.location,
-        createdAt: candidate.createdAt,
-      })
+      .emit('candidate_create', candidate as CandidateCreatedEvent)
       .subscribe();
 
     return candidate;

@@ -1,6 +1,6 @@
 import { Field, Int, InputType, Union, createUnionType } from '@nestjs/graphql';
 
-import { Providers, CampaignEndType } from '@app/prisma';
+import type { Providers, CampaignEndType } from '@prisma/client';
 
 @InputType()
 export class CreateCampaignInput {
