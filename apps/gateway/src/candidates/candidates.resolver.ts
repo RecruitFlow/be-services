@@ -3,6 +3,7 @@ import { CandidatesService } from './candidates.service';
 import { Candidate } from './entities/candidate.entity';
 import { Count } from '../campaign/entities/campaign.entity';
 import { UpdateCandidateInput } from './dto/update-candidate.input';
+import { ListCandidateInput } from './dto/list-candidate.input';
 
 @Resolver(() => Candidate)
 export class CandidatesResolver {
@@ -10,10 +11,9 @@ export class CandidatesResolver {
 
   @Query(() => [Candidate], { name: 'candidates' })
   async findAll(
-    @Args('offset', { type: () => Int }) offset: number,
-    @Args('limit', { type: () => Int }) limit: number,
+    @Args('listCandidateInput') listCandidateInput: ListCandidateInput,
   ) {
-    return await this.candidatesService.findAll(offset, limit);
+    return await this.candidatesService.findAll(listCandidateInput);
   }
 
   @Query(() => Count, { name: 'candidatesCount' })

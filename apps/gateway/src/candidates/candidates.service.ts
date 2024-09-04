@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCandidateInput } from './dto/create-candidate.input';
 import { UpdateCandidateInput } from './dto/update-candidate.input';
+import { ListCandidateInput } from './dto/list-candidate.input';
 import { Logger } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
 import { ClientKafka } from '@nestjs/microservices';
@@ -73,12 +74,12 @@ export class CandidatesService {
     return candidate;
   }
 
-  async findAll(offset: number, limit: number) {
+  async findAll(listCandidateInput: ListCandidateInput) {
     return this.prisma.candidate.findMany({
-      skip: offset,
-      take: limit,
+      skip: listCandidateInput.offset,
+      take: listCandidateInput.limit,
       orderBy: {
-        createdAt: 'asc',
+        [listCandidateInput.sortKey]: listCandidateInput.sortValue,
       },
     });
   }
