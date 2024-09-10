@@ -23,12 +23,11 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: {
-        clientId: 'be-gateway',
+        clientId: 'gateway',
         brokers: [configService.get('KAFKA_URI')],
       },
       consumer: {
-        groupId: 'be-finder',
-        allowAutoTopicCreation: true,
+        groupId: 'finder',
       },
     },
   });

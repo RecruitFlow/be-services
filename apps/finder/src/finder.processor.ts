@@ -8,12 +8,13 @@ import { Inject } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import puppeteer from 'puppeteer';
 import { schema } from './schemas/candidate.schema';
+import { CampaignEndEvent, CandidateCreatedEvent } from '@app/interfaces';
 
 const logger = new Logger('FinderService');
 
 @Processor('campaign:search', { concurrency: 5 })
 export class FinderConsumer extends WorkerHost {
-  constructor(@Inject('CANDIDATE_QUEUE') private kafka_client: ClientKafka) {
+  constructor(@Inject('CAMPAIGN_QUEUE') private campaignQueue: ClientKafka) {
     super();
   }
 
@@ -31,11 +32,11 @@ export class FinderConsumer extends WorkerHost {
         try {
           const candidate = await parser.parse(result);
 
-          this.kafka_client
+          this.campaignQueue
             .emit('candidate_action_save', {
               ...candidate,
               campaignId: job.data.id,
-            })
+            } as CandidateCreatedEvent)
             .subscribe(logger.log);
 
           logger.log('Send to Queue');
@@ -47,6 +48,13 @@ export class FinderConsumer extends WorkerHost {
       }
 
       await job.updateProgress(100);
+
+      this.campaignQueue
+        .send('campaign_end', {
+          id: job.data.id,
+          status: 'ENDED',
+        } as CampaignEndEvent)
+        .subscribe(logger.log);
 
       await browser.close();
 

@@ -87,7 +87,9 @@ export class CandidateService {
       FROM
           hireHubTest.candidates
       GROUP BY
-        ${groupAnalyticInput.field}  
+        ${groupAnalyticInput.field}
+      HAVING
+        metric != ${groupAnalyticInput.field === 'workLocation' ? "'UNDEFINED'" : '0'}
       ORDER BY
           metric`,
     );

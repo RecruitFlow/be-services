@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CampaignService } from './campaign.service';
 import { CampaignResolver } from './campaign.resolver';
+import { CampaignConsumer } from './campaign.consumer';
 import { Transport, ClientsModule } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { PrismaModule } from '@app/prisma';
@@ -18,12 +19,11 @@ import { PrismaModule } from '@app/prisma';
             transport: Transport.KAFKA,
             options: {
               client: {
-                clientId: 'be-gateway',
+                clientId: 'gateway',
                 brokers: [configService.get('KAFKA_URI')],
               },
               consumer: {
-                groupId: 'be-finder',
-                allowAutoTopicCreation: true,
+                groupId: 'finder',
               },
             },
           };
@@ -32,5 +32,6 @@ import { PrismaModule } from '@app/prisma';
     ]),
   ],
   providers: [CampaignResolver, CampaignService],
+  controllers: [CampaignConsumer],
 })
 export class CampaignModule {}

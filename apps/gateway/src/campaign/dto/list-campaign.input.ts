@@ -1,6 +1,15 @@
-import { Field, Int, InputType } from '@nestjs/graphql';
+import { Field, Int, InputType, ObjectType } from '@nestjs/graphql';
 
 import type { CampaignStatus, CampaignEndType } from '@app/prisma';
+
+@InputType()
+export class Filters {
+  @Field(() => String)
+  id: 'status' | 'endType';
+
+  @Field(() => [String])
+  value: CampaignStatus[] | CampaignEndType[];
+}
 
 @InputType()
 export class ListCampaignInput {
@@ -10,11 +19,8 @@ export class ListCampaignInput {
   @Field(() => Int)
   limit: number;
 
-  @Field(() => String, { nullable: true })
-  filterKey: 'status' | 'endType';
-
-  @Field(() => String, { nullable: true })
-  filterValue: CampaignStatus | CampaignEndType;
+  @Field(() => [Filters])
+  filters: Filters[];
 
   @Field(() => String, { nullable: true })
   sortKey: 'status' | 'endType' | 'name';

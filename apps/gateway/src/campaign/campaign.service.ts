@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateCampaignInput } from './dto/create-campaign.input';
 import { UpdateCampaignInput } from './dto/update-campaign.input';
 import { ListCampaignInput } from './dto/list-campaign.input';
-import { PrismaService } from '@app/prisma';
+import { PrismaService, CampaignStatus } from '@app/prisma';
 import { CampaignCreatedEvent } from '@app/interfaces';
 import { Controller, Get, Post, Inject, Body } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
@@ -29,19 +29,20 @@ export class CampaignService {
     return campaign;
   }
 
-  findAll({
-    filterValue,
-    filterKey,
-    sortValue,
-    sortKey,
-    offset,
-    limit,
-  }: ListCampaignInput) {
+  findAll({ filters, sortValue, sortKey, offset, limit }: ListCampaignInput) {
     return this.prisma.campaign.findMany({
+      ...(filters.length && {
+        where: {
+          AND: filters.map(({ id, value }) => ({
+            [id]: {
+              in: value,
+            },
+          })),
+        },
+      }),
+      ...(sortKey && { orderBy: { [sortKey]: sortValue } }),
       skip: offset,
       take: limit,
-      ...(filterKey && { where: { [filterKey]: filterValue } }),
-      ...(sortKey && { orderBy: { [sortKey]: sortValue } }),
     });
   }
 
@@ -68,6 +69,17 @@ export class CampaignService {
         id: {
           in: ids,
         },
+      },
+    });
+  }
+
+  async changeStatus(id: string, status: CampaignStatus) {
+    return this.prisma.campaign.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
       },
     });
   }

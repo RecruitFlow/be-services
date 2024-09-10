@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsDate } from 'class-validator';
+import { IsString, IsOptional, IsDate } from 'class-validator';
 import type {
   CampaignStatus,
   CampaignEndType,

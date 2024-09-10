@@ -76,11 +76,11 @@ export class CandidatesService {
 
   async findAll(listCandidateInput: ListCandidateInput) {
     return this.prisma.candidate.findMany({
-      skip: listCandidateInput.offset,
-      take: listCandidateInput.limit,
       orderBy: {
         [listCandidateInput.sortKey]: listCandidateInput.sortValue,
       },
+      skip: listCandidateInput.offset,
+      take: listCandidateInput.limit,
     });
   }
 

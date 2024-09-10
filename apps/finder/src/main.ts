@@ -15,12 +15,11 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: {
-        clientId: 'be-finder',
+        clientId: 'finder',
         brokers: [process.env.KAFKA_URI],
       },
       consumer: {
-        groupId: 'finder-group',
-        allowAutoTopicCreation: true,
+        groupId: 'gateway',
       },
     },
   });

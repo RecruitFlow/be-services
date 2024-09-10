@@ -18,11 +18,11 @@ import { ConfigService } from '@nestjs/config';
             transport: Transport.KAFKA,
             options: {
               client: {
-                clientId: 'be-gateway',
+                clientId: 'gateway',
                 brokers: [configService.get('KAFKA_URI')],
               },
               consumer: {
-                groupId: 'finder-group',
+                groupId: 'finder',
                 allowAutoTopicCreation: true,
               },
             },

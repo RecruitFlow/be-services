@@ -12,15 +12,15 @@ import { Transport, ClientsModule } from '@nestjs/microservices';
     ConfigModule.forRoot({ isGlobal: true }),
     ClientsModule.register([
       {
-        name: 'CANDIDATE_QUEUE',
+        name: 'CAMPAIGN_QUEUE',
         transport: Transport.KAFKA,
         options: {
           client: {
-            clientId: 'be-finder',
+            clientId: 'finder',
             brokers: [process.env.KAFKA_URI],
           },
           consumer: {
-            groupId: 'be-gateway',
+            groupId: 'gateway',
           },
         },
       },
